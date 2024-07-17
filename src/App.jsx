@@ -1,13 +1,16 @@
 import { useState } from "react";
 import "./App.css";
 import LoginForm from "./LoginForm";
+import UsersList from "./UsersList";
 
-function App() {
-  return (
-    <>
-      <LoginForm />
-    </>
-  );
-}
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const onLogin = () => {
+    return setIsLoggedIn(true);
+  };
+
+  return <>{isLoggedIn ? <UsersList /> : <LoginForm onLogin={onLogin} />}</>;
+};
 
 export default App;
