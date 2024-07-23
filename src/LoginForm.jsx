@@ -1,55 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usersData } from "./data";
 
-import { users } from "./data";
-import UsersList from "./UsersList";
-
-export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const LoginForm = ({ onLogin }) => {
+  const [usersFields, setUsersFields] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (password.length < 4) {
-      setError("Short password");
+  const minPasswordLength = 4;
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setUsersFields((prevFields) => ({
+      ...prevFields,
+      [name]: value,
+    }));
+  };
+
+  useEffect(() => {
+    if (!isFormSubmitted) {
       return;
     }
+    if (usersFields.password.length < minPasswordLength) {
+      setError("Short password");
+      return;
+    } else {
+      setError("");
+    }
+  }, [usersFields, isFormSubmitted]);
 
-    const checkUser = users.find(
+  const onSubmit = (e) => {
+    const { email, password } = usersFields;
+    e.preventDefault();
+
+    setIsFormSubmitted(true);
+
+    const checkUser = usersData.find(
       (user) => user.email === email && user.password === password
     );
 
     if (checkUser) {
-      setIsLoggedIn(true);
+      onLogin();
     } else {
       setError("Not correct email or password");
     }
-  }
-
-  if (isLoggedIn) {
-    return <UsersList />;
-  }
+  };
 
   return (
     <>
-      <form className="login-form" onSubmit={handleSubmit}>
+      <form className="login-form" onSubmit={onSubmit}>
         <div>
           <label>Email: </label>
           <input
+            name="email"
             type="text"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={usersFields.email}
+            onChange={onChange}
           />
         </div>
         <div>
           <label>Password: </label>
           <input
-            type="text"
+            name="password"
+            type="password"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={usersFields.password}
+            onChange={onChange}
           />
         </div>
         <button type="submit">Login</button>
@@ -57,4 +73,6 @@ export default function LoginForm() {
       {error && <p>{error}</p>}
     </>
   );
-}
+};
+
+export default LoginForm;

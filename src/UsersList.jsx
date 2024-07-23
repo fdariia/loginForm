@@ -1,6 +1,13 @@
-import { users } from "./data";
+import { useEffect, useState } from "react";
+import { usersData } from "./data";
 
-export default function UsersList() {
+const UsersList = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    setUsers(usersData);
+  }, []);
+
   const usersList = users.map((user) => (
     <li key={user.id}>
       {user.name} {user.email}
@@ -8,4 +15,6 @@ export default function UsersList() {
   ));
 
   return <ol>{usersList}</ol>;
-}
+};
+
+export default UsersList;
