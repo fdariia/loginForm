@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
-import { usersData } from "./data";
+import { usersData, userEmailOptions, userNameOptions } from "./data";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -9,59 +9,25 @@ const UsersList = () => {
     setUsers(usersData);
   }, []);
 
-  const filteredData = useMemo(() => {
-    if (userId) {
-      const filteredUsers = users.filter((user) => user.id === userId);
-      const filteredUsersList = filteredUsers.map((user) => (
-        <li key={user.id}>
-          {user.firstName} {user.lastName} {user.email}
-        </li>
-      ));
-      return filteredUsersList;
-    }
+  const usersToDisplay = useMemo(() => {
+    if (!userId && users.length > 0) return users;
+
+    return users.filter((user) => user.id === userId);
+  }, [userId, users]);
+
+  const emailOptionsToDisplay = useMemo(() => {
+    if (!userId) return userEmailOptions;
+
+    return userEmailOptions.filter(({ value }) => value === userId);
   }, [userId]);
 
-  // const filteredNameOption = useMemo(() => {
-  //   if (userId) {
-  //     return users
-  //       .filter((user) => user.id === userId)
-  //       .map((user) => (
-  //         <option key={user.id} value={user.id}>
-  //           {user.firstName}
-  //         </option>
-  //       ));
-  //   }
-  // }, [userId]);
-
-  const filteredEmailOption = useMemo(() => {
-    if (userId) {
-      return users
-        .filter((user) => user.id === userId)
-        .map((user) => (
-          <option key={user.id} value={user.id}>
-            {user.email}
-          </option>
-        ));
-    }
-  }, [userId]);
-
-  const usersList = users.map((user) => (
-    <li key={user.id}>
-      {user.firstName} {user.lastName} {user.email}
-    </li>
-  ));
-
-  const selectNameOption = users.map((user) => (
-    <option key={user.id} value={user.id}>
-      {user.firstName}
-    </option>
-  ));
-
-  const selectEmailOption = users.map((user) => (
-    <option key={user.id} value={user.id}>
-      {user.email}
-    </option>
-  ));
+  const renderOption = (options, labelKey) => {
+    return options.map((option) => (
+      <option key={option.value} value={option.value}>
+        {option[labelKey]}
+      </option>
+    ));
+  };
 
   const onChange = (e) => {
     setUserId(Number(e.target.value));
@@ -74,17 +40,24 @@ const UsersList = () => {
           <option value="" disabled selected>
             --Please choose a name--
           </option>
-          {selectNameOption}
+          {renderOption(userNameOptions, "label")}
         </select>
+
         <select name="usersEmail" id="usersEmail" onChange={onChange}>
           <option value="" disabled selected>
             --Please choose an email--
           </option>
-          {userId ? filteredEmailOption : selectEmailOption}
+          {renderOption(emailOptionsToDisplay, "label")}
         </select>
       </div>
 
-      {userId ? <ol>{filteredData}</ol> : <ol>{usersList}</ol>}
+      <ol>
+        {usersToDisplay.map((user) => (
+          <li key={user.id}>
+            {user.firstName} {user.lastName} {user.email}
+          </li>
+        ))}
+      </ol>
     </>
   );
 };

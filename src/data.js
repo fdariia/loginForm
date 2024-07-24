@@ -56,3 +56,73 @@ export const usersData = [
     password: "8888",
   },
 ];
+
+export const userEmailOptions = [
+  {
+    value: 1,
+    label: "1@g.com",
+  },
+  {
+    value: 2,
+    label: "2@g.com",
+  },
+  {
+    value: 3,
+    label: "3@g.com",
+  },
+  {
+    value: 4,
+    label: "4@g.com",
+  },
+  {
+    value: 5,
+    label: "5@g.com",
+  },
+  {
+    value: 6,
+    label: "6@g.com",
+  },
+  {
+    value: 7,
+    label: "7@g.com",
+  },
+  {
+    value: 8,
+    label: "8@g.com",
+  },
+];
+
+export const userNameOptions = [
+  {
+    value: 1,
+    label: "Jonas",
+  },
+  {
+    value: 2,
+    label: "Ann",
+  },
+  {
+    value: 3,
+    label: "John",
+  },
+  {
+    value: 4,
+    label: "George",
+  },
+  {
+    value: 5,
+    label: "Hulio",
+  },
+  {
+    value: 6,
+    label: "Angela",
+  },
+  {
+    value: 7,
+    label: "Jack",
+  },
+  {
+    value: 8,
+    label: "Harper",
+  },
+];
