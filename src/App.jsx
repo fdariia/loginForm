@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { createContext, useState } from "react";
 import "./App.css";
 import LoginForm from "./LoginForm";
 import UsersList from "./UsersList";
 
+export const IsLoggedContext = createContext();
+
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
-  const onLogin = () => {
-    return setIsLoggedIn(true);
-  };
-
-  return <>{isLoggedIn ? <UsersList /> : <LoginForm onLogin={onLogin} />}</>;
+  return (
+    <>
+      <IsLoggedContext.Provider value={[isLoggedIn, setIsLoggedIn]}>
+        {isLoggedIn ? <UsersList /> : <LoginForm />}
+      </IsLoggedContext.Provider>
+    </>
+  );
 };
 
 export default App;

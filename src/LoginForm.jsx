@@ -1,26 +1,34 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { usersData } from "./data";
+import { IsLoggedContext } from "./App";
 
 const LoginForm = ({ onLogin }) => {
   const [usersFields, setUsersFields] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useContext(IsLoggedContext);
 
-  const minPasswordLength = 4;
+  const MIN_PASSWORD_LENGTH = 4;
 
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    setUsersFields((prevFields) => ({
-      ...prevFields,
-      [name]: value,
-    }));
+  const onEmailChange = (e) => {
+    setUsersFields({
+      ...usersFields,
+      email: e.target.value,
+    });
+  };
+
+  const onPasswordChange = (e) => {
+    setUsersFields({
+      ...usersFields,
+      password: e.target.value,
+    });
   };
 
   useEffect(() => {
     if (!isFormSubmitted) {
       return;
     }
-    if (usersFields.password.length < minPasswordLength) {
+    if (usersFields.password.length < MIN_PASSWORD_LENGTH) {
       setError("Short password");
       return;
     } else {
@@ -39,7 +47,7 @@ const LoginForm = ({ onLogin }) => {
     );
 
     if (checkUser) {
-      onLogin();
+      setIsLoggedIn(true);
     } else {
       setError("Not correct email or password");
     }
@@ -55,7 +63,7 @@ const LoginForm = ({ onLogin }) => {
             type="text"
             required
             value={usersFields.email}
-            onChange={onChange}
+            onChange={onEmailChange}
           />
         </div>
         <div>
@@ -65,7 +73,7 @@ const LoginForm = ({ onLogin }) => {
             type="password"
             required
             value={usersFields.password}
-            onChange={onChange}
+            onChange={onPasswordChange}
           />
         </div>
         <button type="submit">Login</button>
