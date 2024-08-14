@@ -2,52 +2,23 @@ import { useContext, useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { usersData } from "./data.ts";
 import { IsLoggedContext } from "./App.tsx";
 
+import { SubmitHandler, useForm } from "react-hook-form";
+
+type FormFields = {
+  email: string;
+  password: string;
+};
+
 const LoginForm = () => {
-  const [usersFields, setUsersFields] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<FormFields>();
   const { setIsLoggedIn } = useContext(IsLoggedContext);
 
-  const MIN_PASSWORD_LENGTH = 4;
-
-  const onEmailChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    if (e.target !== null) {
-      const inputEl = e.target as HTMLInputElement;
-      setUsersFields({
-        ...usersFields,
-        email: inputEl.value,
-      });
-    }
-  };
-
-  const onPasswordChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    if (e.target !== null) {
-      const inputEl = e.target as HTMLInputElement;
-      setUsersFields({
-        ...usersFields,
-        password: inputEl.value,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!isFormSubmitted) {
-      return;
-    }
-    if (usersFields.password.length < MIN_PASSWORD_LENGTH) {
-      setError("Short password");
-      return;
-    } else {
-      setError("");
-    }
-  }, [usersFields, isFormSubmitted]);
-
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    const { email, password } = usersFields;
-    e.preventDefault();
-
-    setIsFormSubmitted(true);
-
+  const onSubmit: SubmitHandler<FormFields> = ({ email, password }) => {
     const checkUser = usersData.find(
       (user) => user.email === email && user.password === password
     );
@@ -55,36 +26,42 @@ const LoginForm = () => {
     if (checkUser) {
       setIsLoggedIn(true);
     } else {
-      setError("Not correct email or password");
+      setError("root", { message: "Not correct email or password" });
     }
   };
 
   return (
     <>
-      <form className="login-form" onSubmit={onSubmit}>
-        <div>
-          <label>Email: </label>
-          <input
-            name="email"
-            type="text"
-            required
-            value={usersFields.email}
-            onChange={onEmailChange}
-          />
-        </div>
-        <div>
-          <label>Password: </label>
-          <input
-            name="password"
-            type="password"
-            required
-            value={usersFields.password}
-            onChange={onPasswordChange}
-          />
-        </div>
+      <form className="login-form" onSubmit={handleSubmit(onSubmit)}>
+        <input
+          {...register("email", {
+            required: "Email is required",
+            validate: (value) => {
+              if (!value.includes("@")) {
+                return "Email must include @";
+              }
+              return true;
+            },
+          })}
+          type="text"
+          placeholder="Email"
+        />
+        {errors.email && <div>{errors.email.message}</div>}
+        <input
+          {...register("password", {
+            required: "Password is required",
+            minLength: {
+              value: 4,
+              message: "Password must have at least 4 characters",
+            },
+          })}
+          type="password"
+          placeholder="Password"
+        />
+        {errors.password && <div>{errors.password.message}</div>}
         <button type="submit">Login</button>
+        {errors.root && <div>{errors.root.message}</div>}
       </form>
-      {error && <p>{error}</p>}
     </>
   );
 };
